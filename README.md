@@ -6,7 +6,7 @@ A running app can be find at [http://zzhangfc.student.ust.hk/curriculummap/](htt
 
 The idea was first intruduced in a [COMP2012H group project](https://github.com/zory233/CurriculumMap). 
 
-Depending on the availability, I will add corequisite or exclusion relation, and integrade course description & details into the web.
+Depending on the availability, I will add corequisite or exclusion relation into the web.
 
 
 # Getting Started with Create React App

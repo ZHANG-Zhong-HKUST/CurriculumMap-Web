@@ -5,7 +5,7 @@ import re
 import json
 
 def refine(s):
-	if (re.match('^[A-Z]{4}[0-9]{4}[H]{0,1}$',s)==None):
+	if (re.match('^[A-Z]{4}[0-9]{4}[A-Z]{0,1}$',s)==None):
 		s=''
 	s = re.sub('\b[A-Z]*?[a-z][A-Z]*?\b','',s)
 	return s
@@ -98,7 +98,8 @@ def read_file(filename):
 		'''
 		for row in spamreader:
 			# print(row)
-			trow = {'code': row[0].replace(' ',''), 'name': row[1]};
+			trow = {'code': row[0].replace(' ',''), 'name': row[1].replace('@',','), 'des':row[10].replace('@',','),
+					'cre': row[2].replace('@',','), 'tpre': row[3].replace('@',','), 'texc': row[4].replace('@',','), 'tcor': row[5].replace('@',',')};
 			trow['pre'] = parse_req(row[3])
 			trow['exc'] = parse_req(row[4])
 			trow['cor'] = parse_req(row[5])
@@ -110,8 +111,8 @@ filename = './courses.csv'
 
 courses = read_file(filename)
 
-json.dumps(courses)
-print()
+f = open('courses.json','w')
+f.write(json.dumps(courses))
 
 course_list = []
 

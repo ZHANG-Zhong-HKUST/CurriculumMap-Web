@@ -2,6 +2,7 @@ import courses from "../assets/courses.json";
 import 'reactflow/dist/style.css';
 import { useCallback, useState } from 'react';
 import ReactFlow, { addEdge, applyEdgeChanges, applyNodeChanges, Background } from 'reactflow';
+import{ useNodesState, useEdgesState } from 'reactflow';
 
 var step_div=[0,0,0,0,0,0,0,0,0,0,0,0];
 var step_X=[-220,-440,-660,-880,-1100,-1320,0,0,0,0,0,0];
@@ -79,21 +80,26 @@ function createGraph(code){
 
 function BuildGraph(props){
     var [initialNodes, initialEdges] = createGraph(props.coursecode);
-    const [nodes, setNodes] = useState(initialNodes);
-    const [edges, setEdges] = useState(initialEdges);
+    const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+    const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
-    const onNodesChange = useCallback(
-        (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
-        [setNodes]
-    );
+    var elements = [initialNodes, initialEdges];
+
+    const onNodeClick = (e, Object) => {
+        const code = [Object.data.label];
+        if(code!=undefined && courses[code]!=undefined) {
+            props.changeCode(code);
+        }
+    };
 
     return (
-        <div>
+        <div style={{height:props.het}}>
             {/* {props.coursecode} */}
             <ReactFlow
                 nodes={initialNodes}
                 edges={initialEdges}
                 // onNodesChange={onNodesChange}
+                onNodeClick={onNodeClick}
                 fitView
                 // style={rfStyle}
                 attributionPosition="top-right"
