@@ -16,7 +16,7 @@ function buildOne(work, baseX, baseY, code, level, step){
         if(typeof(work[operand][i])=='string'){
             het+=10;
             let newcode = work[operand][i];
-            let newnode = {id:code+operand+newcode, 
+            let newnode = {id:code+operand+i+newcode, 
                 data:{label:newcode},
                 parentNode: masternode.id,
                 position:{x:10*level, y:het},
@@ -24,9 +24,9 @@ function buildOne(work, baseX, baseY, code, level, step){
                 sourcePosition: 'right',
                 targetPosition: 'left',
                 extent: 'parent'};
-            let [node_id, tmp_nodes, tmp_edges] = buildRelation(newcode, step_X[step], step_div[step+1], step+1, code+operand+newcode);
+            let [node_id, tmp_nodes, tmp_edges] = buildRelation(newcode, step_X[step], step_div[step+1], step+1, code+operand+i+newcode);
             if(typeof(node_id)!='number') 
-                newedges.push({id: node_id+'-'+code+operand+newcode, source:node_id, target: code+operand+newcode});
+                newedges.push({id: node_id+'-'+code+operand+i+newcode, source:node_id, target: code+operand+i+newcode});
             newnodes.push(newnode);
             newedges = newedges.concat(tmp_edges);
             newnodes = newnodes.concat(tmp_nodes);
@@ -88,8 +88,8 @@ function BuildGraph(props){
     );
 
     return (
-        <div style={{ height: 1000 }}>
-            {props.coursecode}
+        <div>
+            {/* {props.coursecode} */}
             <ReactFlow
                 nodes={initialNodes}
                 edges={initialEdges}

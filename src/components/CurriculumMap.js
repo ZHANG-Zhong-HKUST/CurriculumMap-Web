@@ -7,9 +7,21 @@ class CurriculumMap extends Component{
     constructor (props){
         super(props);
         this.state = {
-            coursecode: ''
+            coursecode: '',
+            het:1000
         };
         this.handleOnSelect = this.handleOnSelect.bind(this);
+    }
+
+    handleResize = e => {
+        this.setState({het:window.innerHeight-document.getElementById('paintarea').getBoundingClientRect().top});
+    }
+    componentDidMount(){
+        window.addEventListener('resize', this.handleResize.bind(this));
+        this.setState({het:window.innerHeight-document.getElementById('paintarea').getBoundingClientRect().top});
+    }
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.handleResize.bind(this));
     }
 
     handleOnSelect (item) {
@@ -23,14 +35,16 @@ class CurriculumMap extends Component{
                 <div className='row'>
                     <h1>Curriculum Map</h1>
                 </div>
-                <div>
-                    <ReactSearchAutocomplete
-                        items={courselist}
-                        onSelect={this.handleOnSelect}
-                        autoFocus
-                    />
+                <div className='row'>
+                    <div style={{zIndex:'99999'}}>
+                        <ReactSearchAutocomplete
+                            items={courselist}
+                            onSelect={this.handleOnSelect}
+                            autoFocus
+                        />
+                    </div>
                 </div>
-                <div>
+                <div className='row' id='paintarea' style={{height:this.state.het}}>
                     <BuildGraph coursecode={this.state.coursecode}/>
                 </div>
             </div>

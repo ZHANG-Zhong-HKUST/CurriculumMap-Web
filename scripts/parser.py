@@ -14,17 +14,16 @@ def clear_special(s):
 	while(s.find(';')>-1):
 		i=s.find(';')
 		s='('+s[:i]+') OR ('+ s[i+1:] +')'
-	s = re.sub('\(.*?for.*?\)','',s)
-	s = re.sub('\(.*?prior.*?\)','',s)
-	s = re.sub('\(.*?For.*?\)','',s)
+	s = re.sub(r'\(.*?for.*?\)','',s)
+	s = re.sub(r'\(.*?prior.*?\)','',s)
+	s = re.sub(r'\(.*?For.*?\)','',s)
+	s = re.sub(r'[oO]ne of', 'OR', s)
 	s = re.sub('Grade .{1,2} or above in','',s)
-	s = re.sub('grade .{1,2} or above in','',s)
-	s = re.sub('grade .{1,2} or above in','',s)
-	s = re.sub('\b[A-Z]*?[a-z][A-Z]*?\b','',s)
-	s = re.sub('\b[A-Za-z\-]{1,3}\b','',s)
-
-
-
+	s = re.sub(r'grade .{1,2} or above in','',s)
+	s = re.sub(r'([A-Z]{4} [0-9]{4}[H]{0,1})\s*or\s*([A-Z]{4} [0-9]{4}[H]{0,1})','\g<1> OR \g<2>',s)
+	s = re.sub(r'\b[A-Z]*?[a-z]+?[A-Z]*?\b','',s)
+	s = re.sub(r'\b[A-Za-z\-]{5,}\b','',s)
+	# print(s)
 	return s
 
 
@@ -121,4 +120,4 @@ for i in courses.keys():
 
 json.dumps(course_list)
 
-# print(parse_req("A passing grade in AL Pure Mathematics / AL Applied Mathematics; OR COMP2012H OR MATH 1014 OR MATH 1020 OR MATH 1024"))
+# print(parse_req("One of ISOM 2500@ MATH 2411 or MATH 3423"))
