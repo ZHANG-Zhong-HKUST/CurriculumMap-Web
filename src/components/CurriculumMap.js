@@ -21,6 +21,9 @@ class CurriculumMap extends Component{
         return (
             <div className='container'>
                 <div className='row'>
+                    <h1>Curriculum Map</h1>
+                </div>
+                <div>
                     <ReactSearchAutocomplete
                         items={courselist}
                         onSelect={this.handleOnSelect}

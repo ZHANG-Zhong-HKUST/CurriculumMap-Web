@@ -5,16 +5,26 @@ import re
 import json
 
 def refine(s):
+	if (re.match('^[A-Z]{4}[0-9]{4}[H]{0,1}$',s)==None):
+		s=''
+	s = re.sub('\b[A-Z]*?[a-z][A-Z]*?\b','',s)
 	return s
 
 def clear_special(s):
 	while(s.find(';')>-1):
 		i=s.find(';')
-		s='('+s[:i]+') OR ('+ s[i+1] +')'
-	s = re.sub('\(.*for.*\)','',s)
-	s = re.sub('\(.*prior.*\)','',s)
+		s='('+s[:i]+') OR ('+ s[i+1:] +')'
+	s = re.sub('\(.*?for.*?\)','',s)
+	s = re.sub('\(.*?prior.*?\)','',s)
+	s = re.sub('\(.*?For.*?\)','',s)
 	s = re.sub('Grade .{1,2} or above in','',s)
 	s = re.sub('grade .{1,2} or above in','',s)
+	s = re.sub('grade .{1,2} or above in','',s)
+	s = re.sub('\b[A-Z]*?[a-z][A-Z]*?\b','',s)
+	s = re.sub('\b[A-Za-z\-]{1,3}\b','',s)
+
+
+
 	return s
 
 
@@ -35,17 +45,18 @@ def parse_inner(s):
 			ret.append(tmp)
 		elif (s[i]==')' or s[i]==']' or s[i]=='}'):
 			break
-		elif (s[i:i+2] == 'OR' or s[i]=='/'):
-			flag = 'OR'
+		elif (s[i:i+2] == 'OR' or s[i]=='/' or s[i]=='@'):
+			if(s[i:i+2] == 'OR'):
+				flag = 'OR'
 			las = refine(las)
-			if(las!=''):
+			if(len(las)==8 or len(las)==9):
 				ret.append(las)
 			las = ''
 			if(s[i:i+2] == 'OR'):
 				i+=1
-		elif (s[i:i+3] == 'AND' or s[i]=='@' ):
+		elif (s[i:i+3] == 'AND' or s[i]=='/' or s[i]=='@'):
 			las = refine(las)
-			if(las!=''):
+			if(len(las)==8 or len(las)==9):
 				ret.append(las)
 			las = ''
 
@@ -57,7 +68,7 @@ def parse_inner(s):
 		i+=1
 
 	las = refine(las)
-	if(las!=''):
+	if(len(las)==8 or len(las)==9):
 		ret.append(las)
 
 	if(len(ret)==0):
@@ -67,7 +78,6 @@ def parse_inner(s):
 
 def parse_req(s):
 	'''
-	return: (A OR B OR C) AND (D OR E OR F) AND G [[A, B, C],[D, E, F],[G]]
 	'''
 	s = clear_special(s)
 	ret, i = parse_inner(s)
@@ -111,5 +121,4 @@ for i in courses.keys():
 
 json.dumps(course_list)
 
-# print(parse_req('(MATH 1014 OR MATH 1020 OR MATH 1024) AND (PHYS 1111 OR PHYS 1112 OR PHYS 1312)'))
-	#, '', 'CHEM 1010 OR CHEM 1020'
+# print(parse_req("A passing grade in AL Pure Mathematics / AL Applied Mathematics; OR COMP2012H OR MATH 1014 OR MATH 1020 OR MATH 1024"))
