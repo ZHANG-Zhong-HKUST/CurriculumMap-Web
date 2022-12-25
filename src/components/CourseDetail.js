@@ -5,12 +5,16 @@ function CourseDetail(props) {
     if(courses[code]==undefined) {
         return (
             <div>
-                Note: you can check course detail by click on the course code on the left.
+                <p>The Curriculum map project is first introduce by Zory in <a href="https://github.com/zory233/CurriculumMap">their COMP2012H course project</a>.</p>
+                <p>This is a web-based re-implementation. Please check the above link for the desktop APP, which has more functionality.</p>
+                <p>The code of this web-app is available on <a href="https://github.com/ZHANG-Zhong-HKUST/CurriculumMap-Web">github</a>.</p>
             </div>
         );
     }
     return (
         <div className="row top-margin">
+            Note: you can check course detail by click the course code on the left.
+            <p> </p>
             <b>{code}</b>
             <b>{courses[code].name}</b>
             <p className="">{courses[code].cre}</p>

@@ -23,6 +23,8 @@ def clear_special(s):
 	s = re.sub(r'([A-Z]{4} [0-9]{4}[H]{0,1})\s*or\s*([A-Z]{4} [0-9]{4}[H]{0,1})','\g<1> OR \g<2>',s)
 	s = re.sub(r'\b[A-Z]*?[a-z]+?[A-Z]*?\b','',s)
 	s = re.sub(r'\b[A-Za-z\-]{5,}\b','',s)
+	s = re.sub(r'\b[A-Za-z\-]{1}\b','',s)
+	s = re.sub(r'\(\s*?\)','',s)
 	# print(s)
 	return s
 
@@ -41,7 +43,8 @@ def parse_inner(s):
 		if (s[i]=='(' or s[i]=='[' or s[i]=='{'):
 			tmp, j = parse_inner(s[i+1:])
 			i = i+j+1
-			ret.append(tmp)
+			if(len(tmp)>0):
+				ret.append(tmp)
 		elif (s[i]==')' or s[i]==']' or s[i]=='}'):
 			break
 		elif (s[i:i+2] == 'OR' or s[i]=='/' or s[i]=='@'):
@@ -72,6 +75,9 @@ def parse_inner(s):
 
 	if(len(ret)==0):
 		return {}, i
+
+	# if(len(ret)==1):
+	# 	return ret,i
 
 	return {flag:ret}, i
 
@@ -121,4 +127,4 @@ for i in courses.keys():
 
 json.dumps(course_list)
 
-# print(parse_req("One of ISOM 2500@ MATH 2411 or MATH 3423"))
+# print(parse_req("A passing grade in AL Pure Mathematics / AL Applied Mathematics; OR MATH 1014 OR MATH 1020 OR MATH 1024"))

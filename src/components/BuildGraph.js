@@ -80,10 +80,10 @@ function createGraph(code){
 
 function BuildGraph(props){
     var [initialNodes, initialEdges] = createGraph(props.coursecode);
-    const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-    const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+    // const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+    // const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
-    var elements = [initialNodes, initialEdges];
+    // var elements = [initialNodes, initialEdges];
 
     const onNodeClick = (e, Object) => {
         const code = [Object.data.label];
@@ -91,6 +91,15 @@ function BuildGraph(props){
             props.changeCode(code);
         }
     };
+
+    if(initialNodes.length==0) {
+        return (
+            <div>
+                <p>Serarch course code above, please click on the suggested list, or use [up] [down] and [enter] to select a course.</p>
+                <p> <b style={{color: "red"}}>WARNING:</b> the inforamtion of this tool is obtained from <a href="https://prog-crs.hkust.edu.hk/ugcourse">HKUST course catalog</a>. It is not necessary to be correct and up to date. Please always refer back to the university's website.</p>
+            </div>
+        );
+    }
 
     return (
         <div style={{height:props.het}}>

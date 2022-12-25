@@ -27,7 +27,7 @@ class CurriculumMap extends Component{
     }
 
     handleOnSelect (item) {
-        this.setState({coursecode: item.name});
+        this.setState({coursecode: item.name, selectedCode: item.name});
     }
 
     handleChangeCode(code){
