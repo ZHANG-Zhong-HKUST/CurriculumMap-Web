@@ -16,11 +16,13 @@ class CurriculumMap extends Component{
     }
 
     handleResize = e => {
-        this.setState({het:window.innerHeight-document.getElementById('paintarea').getBoundingClientRect().top});
+        if (window.innerWidth<=768) this.setState({het:0.6*(window.innerHeight-document.getElementById('paintarea').getBoundingClientRect().top)});
+        else this.setState({het:window.innerHeight-document.getElementById('paintarea').getBoundingClientRect().top});
     }
     componentDidMount(){
         window.addEventListener('resize', this.handleResize.bind(this));
-        this.setState({het:window.innerHeight-document.getElementById('paintarea').getBoundingClientRect().top});
+        if (window.innerWidth<=768) this.setState({het:0.6*(window.innerHeight-document.getElementById('paintarea').getBoundingClientRect().top)});
+        else this.setState({het:window.innerHeight-document.getElementById('paintarea').getBoundingClientRect().top});
     }
     componentWillUnmount() {
         window.removeEventListener('resize', this.handleResize.bind(this));

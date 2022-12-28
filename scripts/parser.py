@@ -14,13 +14,14 @@ def clear_special(s):
 	while(s.find(';')>-1):
 		i=s.find(';')
 		s='('+s[:i]+') OR ('+ s[i+1:] +')'
-	s = re.sub(r'\(.*?for.*?\)','',s)
-	s = re.sub(r'\(.*?prior.*?\)','',s)
-	s = re.sub(r'\(.*?For.*?\)','',s)
+
+	s = re.sub(r'\([A-Za-z\-\s]?for[A-Za-z\-\s]?\)','',s)
+	s = re.sub(r'\([A-Za-z\-\s]?prior[A-Za-z\-\s]?\)','',s)
+	s = re.sub(r'\([A-Za-z\-\s]?For[A-Za-z\-\s]?\)','',s)
 	s = re.sub(r'[oO]ne of', 'OR', s)
-	s = re.sub('Grade .{1,2} or above in','',s)
-	s = re.sub(r'grade .{1,2} or above in','',s)
-	s = re.sub(r'([A-Z]{4} [0-9]{4}[H]{0,1})\s*or\s*([A-Z]{4} [0-9]{4}[H]{0,1})','\g<1> OR \g<2>',s)
+	s = re.sub(r'[Gg]rade .{1,2} or above in','',s)
+	s = re.sub(r'([A-Z]{4} [0-9]{4}[H]{0,1})\s*[Oo]r\s*([A-Z]{4} [0-9]{4}[H]{0,1})','\g<1> OR \g<2>',s)
+	s = re.sub(r'([A-Z]{4} [0-9]{4}[H]{0,1})\s*[Aa]nd\s*([A-Z]{4} [0-9]{4}[H]{0,1})','\g<1> AND \g<2>',s)
 	s = re.sub(r'\b[A-Z]*?[a-z]+?[A-Z]*?\b','',s)
 	s = re.sub(r'\b[A-Za-z\-]{5,}\b','',s)
 	s = re.sub(r'\b[A-Za-z\-]{1}\b','',s)
@@ -125,6 +126,9 @@ course_list = []
 for i in courses.keys():
 	course_list.append({'id':i, 'name':i})
 
-json.dumps(course_list)
 
-# print(parse_req("A passing grade in AL Pure Mathematics / AL Applied Mathematics; OR MATH 1014 OR MATH 1020 OR MATH 1024"))
+
+f = open('course_list.json','w')
+f.write(json.dumps(course_list))
+
+# print(parse_req("{COMP 1021 OR [(COMP 1022P OR COMP 1022Q (prior to 2020-21) OR COMP 2011) AND COMP 1029P]} AND BIEN 2310 AND BIEN 2610 AND MATH 2411"))

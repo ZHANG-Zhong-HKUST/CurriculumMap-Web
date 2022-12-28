@@ -13,7 +13,7 @@ function CourseDetail(props) {
     }
     return (
         <div className="row top-margin">
-            Note: you can check course detail by click the course code on the left.
+            <p>Note: you can check course detail by click the course code on the left/up.</p>
             <p> </p>
             <b>{code}</b>
             <b>{courses[code].name}</b>
