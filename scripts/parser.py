@@ -19,7 +19,7 @@ def clear_special(s):
 	s = re.sub(r'\([A-Za-z\-\s]?prior[A-Za-z\-\s]?\)','',s)
 	s = re.sub(r'\([A-Za-z\-\s]?For[A-Za-z\-\s]?\)','',s)
 	s = re.sub(r'[oO]ne of', 'OR', s)
-	s = re.sub(r'[Gg]rade .{1,2} or above in','',s)
+	s = re.sub(r'[Gg]rade .{1,2} or above in','OR',s)
 	s = re.sub(r'([A-Z]{4} [0-9]{4}[H]{0,1})\s*[Oo]r\s*([A-Z]{4} [0-9]{4}[H]{0,1})','\g<1> OR \g<2>',s)
 	s = re.sub(r'([A-Z]{4} [0-9]{4}[H]{0,1})\s*[Aa]nd\s*([A-Z]{4} [0-9]{4}[H]{0,1})','\g<1> AND \g<2>',s)
 	s = re.sub(r'\b[A-Z]*?[a-z]+?[A-Z]*?\b','',s)
@@ -77,10 +77,22 @@ def parse_inner(s):
 	if(len(ret)==0):
 		return {}, i
 
-	# if(len(ret)==1):
-	# 	return ret,i
+	if(len(ret)==1 and type(ret[0])is not str):
+		return ret[0],i
 
-	return {flag:ret}, i
+	nret = []
+
+	for k in range(len(ret)):
+		if (type(ret[k])is not str):
+			if (list(ret[k].keys())[0]==flag):
+				for j in ret[k][flag]:
+					nret.append(j)
+			else:
+				nret.append(ret[k])
+		else:
+			nret.append(ret[k])
+
+	return {flag:nret}, i
 
 def parse_req(s):
 	'''
@@ -121,14 +133,14 @@ courses = read_file(filename)
 f = open('courses.json','w')
 f.write(json.dumps(courses))
 
-course_list = []
+# course_list = []
 
-for i in courses.keys():
-	course_list.append({'id':i, 'name':i})
+# for i in courses.keys():
+# 	course_list.append({'id':i, 'name':i})
 
 
 
-f = open('course_list.json','w')
-f.write(json.dumps(course_list))
+# f = open('course_list.json','w')
+# f.write(json.dumps(course_list))
 
-# print(parse_req("{COMP 1021 OR [(COMP 1022P OR COMP 1022Q (prior to 2020-21) OR COMP 2011) AND COMP 1029P]} AND BIEN 2310 AND BIEN 2610 AND MATH 2411"))
+# print(parse_req("Grade B or above in AL Pure Mathematics/AL Applied Mathematics; OR level 5* or above in HKDSE Mathematics Extended Module M1/M2; OR grade A- or above in MATH 1014; OR grade B+ or above in MATH 1020 / MATH 1024"))
