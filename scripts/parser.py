@@ -30,7 +30,7 @@ def clear_special(s):
 	return s
 
 
-def parse_inner(s):
+def parse_inner(s, isOut):
 	n = len(s)
 	ret = []
 	las = ''
@@ -42,7 +42,7 @@ def parse_inner(s):
 			i+=1
 			continue
 		if (s[i]=='(' or s[i]=='[' or s[i]=='{'):
-			tmp, j = parse_inner(s[i+1:])
+			tmp, j = parse_inner(s[i+1:], False)
 			i = i+j+1
 			if(len(tmp)>0):
 				ret.append(tmp)
@@ -77,7 +77,7 @@ def parse_inner(s):
 	if(len(ret)==0):
 		return {}, i
 
-	if(len(ret)==1 and type(ret[0])is not str):
+	if(len(ret)==1 and ((isOut == False) or (type(ret[0]) is not str))):
 		return ret[0],i
 
 	nret = []
@@ -98,7 +98,7 @@ def parse_req(s):
 	'''
 	'''
 	s = clear_special(s)
-	ret, i = parse_inner(s)
+	ret, i = parse_inner(s, True)
 	return ret
 
 def read_file(filename):
@@ -143,4 +143,4 @@ f.write(json.dumps(courses))
 # f = open('course_list.json','w')
 # f.write(json.dumps(course_list))
 
-# print(parse_req("Grade B or above in AL Pure Mathematics/AL Applied Mathematics; OR level 5* or above in HKDSE Mathematics Extended Module M1/M2; OR grade A- or above in MATH 1014; OR grade B+ or above in MATH 1020 / MATH 1024"))
+print(parse_req("COMP 2011"))
