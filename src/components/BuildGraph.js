@@ -6,15 +6,26 @@ import{ useNodesState, useEdgesState } from 'reactflow';
 
 var step_div=[0,0,0,0,0,0,0,0,0,0,0,0];
 var step_X=[-220,-440,-660,-880,-1100,-1320,0,0,0,0,0,0];
-var existsIDs=[];
+var nodes={};
+var initialEdges = [];
+var initialNodes = [];
+var blocks={};
+
+function max(a,b){return a>b?a:b;}
+function min(a,b){return a<b?a:b;}
+
+function pushNode(node) {
+    initialNodes.push(node);
+    nodes[node.id] = initialNodes.indexOf(node);
+}
 
 function buildOne(work, baseX, baseY, code, level, step){
     let het = 30;
     let operand = Object.keys(work)[0];
     let newedges = [];
     let masternode = { id: code, data:{label:operand}, position:{x:baseX, y:baseY}, sourcePosition: 'right', targetPosition:'left'};
-    let newnodes = [masternode];
     let innerCount = 0;
+    pushNode(masternode);
     for(let i=0; i < work[operand].length; i++){
         if(typeof(work[operand][i])=='string'){
             het+=10;
@@ -29,75 +40,92 @@ function buildOne(work, baseX, baseY, code, level, step){
                 extent: 'parent'};
             let new_id = getIdCode(newcode, step);
             if(new_id !== null){
-                if(existsIDs.indexOf(new_id)==-1) {
-                    let [node_id, tmp_nodes, tmp_edges] = buildRelation(newcode, step_X[step], step_div[step+1], step+1, new_id);
-                    newedges = newedges.concat(tmp_edges);
-                    newnodes = newnodes.concat(tmp_nodes);
+                if(blocks[new_id]==undefined) {
+                    let node_id = buildRelation(newcode, step_X[step], step_div[step+1], step+1, new_id);
+                } else {
+                    blocks[new_id].mxstep = max(blocks[new_id].mxstep, step+1);
                 }
-                newedges.push({id: new_id+'-'+newnode.id, source:new_id, target: newnode.id});
+                initialEdges.push({id: new_id+'-'+newnode.id, source:new_id, target: newnode.id});
             }
-            newnodes.push(newnode);
+            pushNode(newnode);
             het+=50;
         } else {
             if(Object.keys(work[operand][i]).length==0) continue;
             het+=10;
             innerCount += 1;
-            let [tmp_nodes, tmp_edges, tmp_Y] = buildOne(work[operand][i], 10, het, code+'inner'+innerCount, level-1, step);
-            tmp_nodes[0].parentNode=masternode.id;
-            tmp_nodes[0].extetnt='parent';
-            newedges = newedges.concat(tmp_edges);
-            newnodes = newnodes.concat(tmp_nodes);
+            let tmp_Y = buildOne(work[operand][i], 10, het, code+'inner'+innerCount, level-1, step);
+            initialNodes[nodes[code+'inner'+innerCount]].parentNode=masternode.id;
+            initialNodes[nodes[code+'inner'+innerCount]].extent='parent';
             het += tmp_Y+10;
         }
     }
-    newnodes[0].style={width:100+level*20, height: het}
-    return [ newnodes, newedges, het];
+    initialNodes[nodes[masternode.id]].style={width:100+level*20, height: het};
+
+    return het;
 }
 
 function getIdCode(code, step){
     if(courses[code]==undefined) return null;
     let work = courses[code].pre;
     if(Object.keys(work).length!==0){
-        return JSON.stringify(work)+step+'super';
+        return JSON.stringify(work)+'super';
     }
     return null;
 }
 
 function buildRelation(code, baseX, baseY, step, idcode){
-    let nodes=[], edges=[]
-    if(courses[code]==undefined) return [-1,[],[]];
+    if(courses[code]==undefined) return -1;
     let work = courses[code].pre;
-    existsIDs.push(idcode);
+    blocks[idcode]={step:step, mxstep:step};
     if(Object.keys(work).length!==0){
-        let [tmp_nodes, tmp_edges, tmp_Y] = buildOne(work, baseX-220, baseY, idcode, 3, step);
+        let tmp_Y = buildOne(work, baseX-220, baseY, idcode, 3, step);
         step_div[step]+=tmp_Y+10;
-        nodes = nodes.concat(tmp_nodes);
-        edges = edges.concat(tmp_edges);
-        return [tmp_nodes[0].id, nodes, edges];
+        return idcode;
     }
-    return [-1,[],[]];
+    return -1;
+}
+
+function moveBlock_pushLeft(id) {
+    let mxstep = blocks[id].mxstep;
+    let step = blocks[id].step;
+    for(let tid in blocks) {
+        if (blocks[tid].step > step && 
+            (initialNodes[nodes[tid]].position.y+initialNodes[nodes[tid]].style.height+10>initialNodes[nodes[id]].position.y &&
+                initialNodes[nodes[tid]].position.y<initialNodes[nodes[id]].position.y+initialNodes[nodes[id]].style.height+10)) {
+            initialNodes[nodes[tid]].position.x -= (mxstep-step) * 220;
+            blocks[tid].step += (mxstep-step);
+            blocks[tid].mxstep += (mxstep-step);
+        }
+    }
+    initialNodes[nodes[id]].position.x -= (mxstep-step) * 220;
+    blocks[id].step += (mxstep-step);
+}
+
+function moveBlock(){
+    for(let id in blocks) {
+        let newpos = -10;
+        if(blocks[id].mxstep > blocks[id].step) moveBlock_pushLeft(id);
+    }
 }
 
 function createGraph(code){
     for(let i = 0;i<step_div.length; i++) step_div[i]=0;
-    let initialNodes = [];
-    let initialEdges = [];
-    existsIDs = [];
+    initialNodes = [];
+    initialEdges = [];
+    nodes = {};
+    blocks = {};
     if(code==''){
-        return [initialNodes, initialEdges];
+        return;
     }
-    initialNodes.push({id:code, data:{label:code}, style:{width:100,height:40}, sourcePosition: 'right', targetPosition: 'left', position: {x:0, y:0}});
-    let [node_id, tmp_nodes, tmp_edges] = buildRelation(code, 0, 0, 0, code+'super-1');
-    // tmp_nodes[0].position.y = -tmp_nodes[0].style.height/2;
-    initialNodes=initialNodes.concat(tmp_nodes);
-    initialEdges=initialEdges.concat(tmp_edges);
+    pushNode({id:code, data:{label:code}, style:{width:100,height:40}, sourcePosition: 'right', targetPosition: 'left', position: {x:0, y:0}});
+    let node_id = buildRelation(code, 0, 0, 0, code+'super-1');
     if(typeof(node_id)!='number') 
         initialEdges.push({id: node_id+'-'+code, source:node_id, target: code});
-    return [initialNodes, initialEdges];
+    moveBlock();
 }
 
 function BuildGraph(props){
-    var [initialNodes, initialEdges] = createGraph(props.coursecode);
+    createGraph(props.coursecode);
     // const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
     // const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
