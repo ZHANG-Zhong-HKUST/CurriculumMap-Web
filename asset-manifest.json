@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/CurriculumMap-Web/static/css/main.466b9f19.css",
+    "main.js": "/CurriculumMap-Web/static/js/main.92c9d07d.js",
+    "index.html": "/CurriculumMap-Web/index.html",
+    "main.466b9f19.css.map": "/CurriculumMap-Web/static/css/main.466b9f19.css.map",
+    "main.92c9d07d.js.map": "/CurriculumMap-Web/static/js/main.92c9d07d.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.466b9f19.css",
+    "static/js/main.92c9d07d.js"
+  ]
+}
