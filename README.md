@@ -2,7 +2,7 @@
 
 This is a Curriculum map web app for HKUST. It shows all prerequisites and prerequisites of prerequisites of a single course.
 
-A running app can be find at [http://zzhangfc.student.ust.hk/curriculummap/](http://zzhangfc.student.ust.hk/curriculummap/).
+A running app can be find at [https://zhang-zhong-hkust.github.io/CurriculumMap-Web/](https://zhang-zhong-hkust.github.io/CurriculumMap-Web/).
 
 The idea was first intruduced in a [COMP2012H group project](https://github.com/zory233/CurriculumMap). Please check their Desktop project, it has more functionality. I appreciate their idea, data collection, suggestion, and other help in this project.
 
